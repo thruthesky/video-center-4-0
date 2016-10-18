@@ -2,12 +2,14 @@ import { NgModule } from '@angular/core';
 import { IonicApp, IonicModule } from 'ionic-angular';
 import { MyApp } from './app.component';
 import { EntrancePage } from '../pages/entrance/entrance';
+import { LobbyPage } from '../pages/lobby/lobby';
 import { Videocenter } from '../providers/videocenter';
 
 @NgModule({
   declarations: [
     MyApp,
-    EntrancePage
+    EntrancePage,
+    LobbyPage
   ],
   imports: [
     IonicModule.forRoot(MyApp)
@@ -15,7 +17,8 @@ import { Videocenter } from '../providers/videocenter';
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
-    EntrancePage
+    EntrancePage,
+    LobbyPage
   ],
   providers: [ Videocenter ]
 })
