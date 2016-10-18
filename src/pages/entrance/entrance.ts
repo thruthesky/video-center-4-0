@@ -7,13 +7,18 @@ import { LobbyPage } from '../lobby/lobby';
 })
 export class EntrancePage {
   username: string;
+  error: string;
   constructor(public navCtrl: NavController) {
-    this.username = "";
   }
-  signin(username: string) {
-    if ( username != ""){
-      this.username = '';
+  onClickSignin() {
+    if ( this.username ) {
       this.navCtrl.push( LobbyPage );
     }
+    else {
+      this.showErrorInputUsername();
+    }
+  }
+  showErrorInputUsername() {
+    this.error = "Why don't you input yourname? right?";
   }
 }

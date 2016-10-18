@@ -2,6 +2,7 @@
 import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
 
+export const LobbyRoomName: string = 'Lobby';
 @Injectable()
 export class Videocenter {
     socketUrl: string = "http://localhost:9001/";
@@ -9,6 +10,9 @@ export class Videocenter {
     static connection;
   constructor() {
     console.log('Hello Videocenter Provider');
+  }
+  get socket() {
+    return this.getSocket();
   }
   /**
    * Connects to the server.
@@ -21,10 +25,22 @@ export class Videocenter {
   /**
    * Gets the socket.
    */
-  getSocket() : void {
+  getSocket() {
         if ( Videocenter.socket === false ) {
             Videocenter.socket = Videocenter.connection.getSocket();
         }
         return Videocenter.socket;
   }
+  
+  joinRoom( roomname: string, callback ) {
+    this.emit('join-room', roomname, callback);
+  }
+  /**
+   * @edited by JaeHo. Put better signature. 2016-09-02.
+   */
+  emit( protocol: string, data?: any, callback?: boolean | any ) {
+    this.socket.emit( protocol, data, callback );
+  }
+    
+
 }
