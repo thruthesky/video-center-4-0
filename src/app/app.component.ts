@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
 import { Platform } from 'ionic-angular';
 import { StatusBar } from 'ionic-native';
-
-import { HomePage } from '../pages/home/home';
+import { EntrancePage } from '../pages/entrance/entrance';
 import { Videocenter } from '../providers/videocenter';
 
 
@@ -10,7 +9,7 @@ import { Videocenter } from '../providers/videocenter';
   template: `<ion-nav [root]="rootPage"></ion-nav>`
 })
 export class MyApp {
-  rootPage = HomePage;
+  rootPage = EntrancePage;
 
   constructor(platform: Platform, private videocenter: Videocenter ) {
     videocenter.connnect();
