@@ -1,14 +1,29 @@
 /// <reference path="../d.ts/rmc3.d.ts" />
 import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
+import { Md5 } from 'ts-md5/dist/md5';
+import { Events } from 'ionic-angular';
 
 export const LobbyRoomName: string = 'Lobby';
+export interface USER {
+    name: string;
+    room: string;
+    socket: string
+    type: string;
+}
+
+
+
+import { Storage } from '@ionic/storage';
 @Injectable()
 export class Videocenter {
     socketUrl: string = "http://localhost:9001/";
     static socket:any = false;
     static connection;
-  constructor() {
+  constructor(
+    private storage: Storage,
+    private events: Events
+   ) {
     console.log('Hello Videocenter Provider');
   }
   get socket() {
@@ -21,6 +36,7 @@ export class Videocenter {
       console.log("Videocenter::connect()");
     Videocenter.connection = new RTCMultiConnection();
     Videocenter.connection.socketURL = this.socketUrl;
+    this.listen();
   }
   /**
    * Gets the socket.
@@ -31,16 +47,99 @@ export class Videocenter {
         }
         return Videocenter.socket;
   }
-  
-  joinRoom( roomname: string, callback ) {
-    this.emit('join-room', roomname, callback);
+  listen() {
+    let socket = this.socket;
+    //console.log("Videocenter::listen()", socket);
+    socket.on('update-username', re => {
+      this.events.publish( 'update-username', re );
+    });
   }
   /**
-   * @edited by JaeHo. Put better signature. 2016-09-02.
+   * Returns Promise for roomname.
+   */
+  get roomname() {
+    return this.storage.get('roomname');
+  }
+  /**
+   * Returns Promise for username
+   * @code
+   *    vc.username.then( x => this.username = x );
+   * @endcode
+   */
+  get username() {
+    return this.storage.get('username');
+  }
+  /**
+   * 
+   * 
    */
   emit( protocol: string, data?: any, callback?: boolean | any ) {
-    this.socket.emit( protocol, data, callback );
+    
+    
+    // @todo clearify why we need if....
+    if ( callback ) this.socket.emit( protocol, data, callback );
+    else this.socket.emit( protocol, data );
   }
+  
+  
+  setConfig( key:string, value:string ) {
+    this.storage.set( key, value );
+  }
+  config( key: string, callback ) {
+    this.storage .get( key )
+      .then( re => callback( re ) );  
+  }
+  
+  
+  // ------------------ Server Communication --------------------
+  
+  /**
+   * Update username
+   */
+  updateUsername( username: string, callback: (user:USER) => void ) {
+    this.emit( 'update-username', username, ( user: USER ) => {
+      this.setConfig('username', username );
+      callback( user );
+    } );
+  }
+
+  /**
+   * Joins into a room and remember its name.
+   * @use this.roomname.then( roomanme => ... ) to get room name
+   */
+  joinRoom( roomname: string, callback ) {
+    this.emit('join-room', roomname, re => {
+      this.setConfig('roomname', roomname);
+      callback( re );
+    });
+  }
+  
+  
+
+  userList( roomname: string, callback : any ) : void {
+    this.emit('user-list', roomname, callback);
+  }    
     
 
+
+
+
+
+    /**
+     * @edited give proper signature. 2016-09-02 JaeHo Song.
+     */
+    /*
+    updateUsername( username: string, callback: (user:de.User) => void ) {
+        Server.emit( 'update-username', username, (user: de.User) => {
+            callback( user );
+        } );
+    }
+    */
+    
+    
+    md5( str: string ) {
+      let md = new Md5();
+      md.appendStr( str );
+      return md.end();
+    }
 }
