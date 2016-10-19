@@ -7,7 +7,18 @@
 </ion-header>
 
 <ion-content>
-  <ion-list>
-    <button ion-button (click)="onClickJoinRoom()">Join Room</button>
+  <ion-list inset>
+
+    <ion-item>
+      <button ion-button (click)="onClickUpdateUsername()" block >Update Username</button>
+    </ion-item>
+    <ion-item>
+      <button ion-button (click)="onClickCreateRoom()" block color="secondary" >Create Room</button>
+    </ion-item>
+
+    <ion-item>
+      <button ion-button (click)="onClickJoinRoom()" block color="danger">Join Room</button>
+    </ion-item>
+    
   </ion-list>
 </ion-content>
