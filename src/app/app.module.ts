@@ -3,8 +3,7 @@ import { IonicApp, IonicModule } from 'ionic-angular';
 import { MyApp } from './app.component';
 import { EntrancePage } from '../pages/entrance/entrance';
 import { LobbyPage } from '../pages/lobby/lobby';
-import { Page1 } from '../pages/page1/page1';
-import { Page2 } from '../pages/page2/page2';
+import { RoomPage } from '../pages/room/room';
 import { Videocenter } from '../providers/videocenter';
 
 @NgModule({
@@ -12,8 +11,7 @@ import { Videocenter } from '../providers/videocenter';
     MyApp,
     EntrancePage,
     LobbyPage,
-    Page1,
-    Page2
+    RoomPage
   ],
   imports: [
     IonicModule.forRoot(MyApp)
@@ -23,8 +21,7 @@ import { Videocenter } from '../providers/videocenter';
     MyApp,
     EntrancePage,
     LobbyPage,
-    Page1,
-    Page2
+    RoomPage
   ],
   providers: [ Videocenter ]
 })

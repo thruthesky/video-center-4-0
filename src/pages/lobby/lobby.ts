@@ -1,5 +1,5 @@
-import { Component,ViewChild } from '@angular/core';
-import { Nav, Platform, NavController } from 'ionic-angular';
+import { Component } from '@angular/core';
+import { NavController } from 'ionic-angular';
 import * as x from '../../providers/videocenter';
 @Component({
   selector: 'page-lobby',
@@ -7,7 +7,7 @@ import * as x from '../../providers/videocenter';
 })
 export class LobbyPage {
 
-  constructor(public navCtrl: NavController, platform: Platform, private vc: x.Videocenter ) {
+  constructor(public navCtrl: NavController, private vc: x.Videocenter ) {
     vc.joinRoom( x.LobbyRoomName, re => { 
       console.log('LobbyPage::constructor() joinRoom callback:', re);
      } );
