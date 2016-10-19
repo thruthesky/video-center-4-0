@@ -19,6 +19,6 @@ export class EntrancePage {
     }
   }
   showErrorInputUsername() {
-    this.error = "Why don't you input yourname? right?";
+    this.error = "Username is empty";
   }
 }
