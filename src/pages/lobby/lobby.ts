@@ -15,6 +15,7 @@ export class LobbyPage {
      } );
   }
   onClickUpdateUsername() {
+    
     let prompt = this.alertCtrl.create({
       title: 'Update Username',
       message: "Enter a username to update your username",
