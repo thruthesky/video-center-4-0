@@ -126,6 +126,7 @@ export class Videocenter {
     });
   }
   logout( callback ) {
+    this.setConfig('username', '');
     this.emit('log-out', callback );
   }
   userList( roomname: string, callback : any ) : void {

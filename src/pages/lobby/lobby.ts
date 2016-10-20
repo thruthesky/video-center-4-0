@@ -51,33 +51,7 @@ export class LobbyPage {
     this.listenEvents();
   }
   onClickUpdateUsername() {
-    
-    let prompt = this.alertCtrl.create({
-      title: 'Update Username',
-      message: "Enter a username to update your username",
-      inputs: [
-        {
-          name: 'username',
-          placeholder: 'Update Username'
-        },
-      ],
-      buttons: [        
-        {
-          text: 'Cancel',
-          handler: data => {
-            console.log('Cancel clicked');
-          }
-        },
-        {
-          text: 'Update',
-          handler: data => {
-            console.log('Update Username clicked');
-            this.onUpdateUsername( data.username );
-          }
-        }        
-      ]
-    });
-    prompt.present();
+    this.getUsername( username => this.updateUsername( username ) );
   }
   onClickCreateRoom() {
     let prompt = this.alertCtrl.create({
@@ -112,12 +86,11 @@ export class LobbyPage {
 
   onClickLogout() {
     this.vc.logout(()=> {
-      this.vc.setConfig('username', '');
       this.navCtrl.setRoot( EntrancePage );
     });
     
   }
-  onUpdateUsername( username: string ) {
+  updateUsername( username: string ) {
     console.log(username);
     if ( username ) {
       this.vc.updateUsername( username, re => {
@@ -229,4 +202,40 @@ export class LobbyPage {
     });
 
   }
+
+
+
+  /**
+   * Gets username from user keyboard input.
+   */
+  getUsername( callback ) {
+    
+    let prompt = this.alertCtrl.create({
+      title: 'Update Username',
+      message: "Enter a username to update your username",
+      inputs: [
+        {
+          name: 'username',
+          placeholder: 'Update Username'
+        },
+      ],
+      buttons: [        
+        {
+          text: 'Cancel',
+          handler: data => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Update',
+          handler: data => {
+            console.log('Update Username clicked');
+            callback( data.username );
+          }
+        }        
+      ]
+    });
+    prompt.present();
+  }
+  
 }
