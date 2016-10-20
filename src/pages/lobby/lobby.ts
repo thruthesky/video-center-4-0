@@ -24,8 +24,9 @@ export class LobbyPage {
     private vc: x.Videocenter,
     public alertCtrl: AlertController,
     private events: Events ) {
-    vc.username.then( x => this.username = x );
+    
     vc.joinRoom( x.LobbyRoomName, re => { 
+      vc.username.then( x => this.username = x );
       console.log('LobbyPage::constructor() joinRoom callback:', re);
       vc.userList( '', re => {
         console.log('LobbyPage::constructor() vc.userList callback(): ', re);
@@ -46,18 +47,18 @@ export class LobbyPage {
           placeholder: 'Update Username'
         },
       ],
-      buttons: [
-        {
-          text: 'Update',
-          handler: data => {
-            console.log('Update Username clicked');
-            this.onUpdateUsername( data );
-          }
-        },
+      buttons: [        
         {
           text: 'Cancel',
           handler: data => {
             console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Update',
+          handler: data => {
+            console.log('Update Username clicked');
+            this.onUpdateUsername( data.username );
           }
         }        
       ]
@@ -74,17 +75,17 @@ export class LobbyPage {
           placeholder: 'Create Room'
         },
       ],
-      buttons: [
-        {
-          text: 'Create',
-          handler: data => {
-            console.log('Create Room clicked');
-          }
-        },
+      buttons: [        
         {
           text: 'Cancel',
           handler: data => {
             console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Create',
+          handler: data => {
+            console.log('Create Room clicked');
           }
         }        
       ]
@@ -100,11 +101,22 @@ export class LobbyPage {
     this.navCtrl.setRoot( EntrancePage );
   }
   onUpdateUsername( username: string ) {
-
+    console.log(username);
+    if ( username ) {
+      this.vc.updateUsername( username, re => {
+        this.username = re.name;
+      } );
+    }
+    else {     
+      let alert = this.alertCtrl.create({
+      title: 'Form Error!',
+        subTitle: 'Your username input is empty!',
+        buttons: ['OK']
+      });
+      alert.present();
+    }
   }
-  /**
-   * 
-   */
+  
   showRoomList( users: { (key: string) : Array<x.USER> } ) {
     console.log( 'LobbyPage::showRoomList() users: ', users );
     for ( let socket_id in users ) {
@@ -121,26 +133,24 @@ export class LobbyPage {
   }
   get roomIds () {
     return Object.keys( this.rooms );
-  }
-  /*
-      static show_room_list( users: Array<de.User> ) :void {
-        for( let i in users ) {
-            if ( ! users.hasOwnProperty(i) ) continue;
-            let user: de.User = users[i];   
-            if(user.type != de.admin_type){      
-                let room_id = MD5(user.room);
-                let $room = e.lobby_room_list.find('[id="'+room_id+'"]');
-                if ( $room.length == 0 ) e.appendRoom( user.room, room_id );            
-                Lobby.add_user(user);
-            }  
-        }         
-    }
-    */
-    
+  } 
     
   listenEvents() {
     this.events.subscribe( 'update-username', re => {
-      console.log("LobbyPage::listenEvents() => One user updated his name: ", re );
+      console.log("LobbyPage::listenEvents() => One user updated his name: ", re );   
+      for( let socket_id in re ) {
+        let user: x.USER = re[socket_id];
+        let room_id = <string> this.vc.md5( user.room );   
+        if ( this.rooms[ room_id ] === void 0 ) this.rooms[ room_id ] = { name: user.room, users: [] };   
+        let users = this.rooms[ room_id ].users;        
+        for(let i in users) { 
+          if( users[i].socket === user.socket) {
+            this.rooms[ room_id ].users[i] = user;
+            break;
+          }
+          
+        }       
+      }
     });
   }
 }
