@@ -5,6 +5,7 @@ import { EntrancePage } from '../pages/entrance/entrance';
 import { LobbyPage } from '../pages/lobby/lobby';
 import { RoomPage } from '../pages/room/room';
 import { Videocenter } from '../providers/videocenter';
+import { Storage } from '@ionic/storage';
 
 @NgModule({
   declarations: [
@@ -23,6 +24,6 @@ import { Videocenter } from '../providers/videocenter';
     LobbyPage,
     RoomPage
   ],
-  providers: [ Videocenter ]
+  providers: [ Videocenter, Storage ]
 })
 export class AppModule {}
