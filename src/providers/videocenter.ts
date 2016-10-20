@@ -53,6 +53,9 @@ export class Videocenter {
     socket.on('update-username', re => {
       this.events.publish( 'update-username', re );
     });
+    socket.on('chatMessage', re => {
+      this.events.publish( 'chatMessage', re );
+    });
   }
   /**
    * Returns Promise for roomname.
@@ -120,7 +123,9 @@ export class Videocenter {
     this.emit('user-list', roomname, callback);
   }    
     
-
+  sendMessage( inputMessage: string, callback : any ) : void {
+    this.emit('chat-message', inputMessage, callback);
+  } 
 
 
 

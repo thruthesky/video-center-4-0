@@ -11,6 +11,15 @@ export interface ROOMS {
     users: Array< x.USER >;
   }
 }
+export interface MESSAGE {
+    message: string;
+    name: string;
+    room: string;
+}
+export interface MESSAGELIST {
+    messages: Array< MESSAGE >
+}
+
 @Component({
   selector: 'page-lobby',
   templateUrl: 'lobby.html'
@@ -19,12 +28,17 @@ export class LobbyPage {
 //    rooms: Array<{ room_id: string; users: x.USER}>;
   rooms: ROOMS = <ROOMS> {};
   username: string;
+  inputMessage: string;
+  listMessage: MESSAGELIST = <MESSAGELIST> {}; 
   constructor(
     public navCtrl: NavController,
     private vc: x.Videocenter,
     public alertCtrl: AlertController,
     private events: Events ) {
-    
+    this.inputMessage = '';
+    if ( this.listMessage[0] === void 0 ) {
+      this.listMessage[0] = { messages: [] };
+    }
     vc.joinRoom( x.LobbyRoomName, re => { 
       vc.username.then( x => this.username = x );
       console.log('LobbyPage::constructor() joinRoom callback:', re);
@@ -116,6 +130,14 @@ export class LobbyPage {
       alert.present();
     }
   }
+  onSendMessage(message: string) {
+    if(message != ""){
+      this.vc.sendMessage(message, ()=> {
+        this.inputMessage = '';             
+      });
+         
+    }
+  }
   
   showRoomList( users: { (key: string) : Array<x.USER> } ) {
     console.log( 'LobbyPage::showRoomList() users: ', users );
@@ -147,10 +169,23 @@ export class LobbyPage {
           if( users[i].socket === user.socket) {
             this.rooms[ room_id ].users[i] = user;
             break;
-          }
-          
+          }          
         }       
       }
     });
+    this.events.subscribe( 'chatMessage', re => {
+      console.log("LobbyPage::listenEvents() => One user receive message: ", re );   
+      for(let i in re) {
+        let message = re[i];
+        console.log( message );        
+        this.listMessage[0].messages.push( message );   
+        
+      }
+      console.log(this.listMessage[0].messages);
+      for(let i of this.listMessage[0].messages){
+        console.log(i.message)
+      }
+    });
+
   }
 }

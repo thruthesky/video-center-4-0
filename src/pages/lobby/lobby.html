@@ -10,24 +10,21 @@
   <ion-list inset>
 
     <ion-item>
-      <button ion-button (click)="onClickUpdateUsername()" block >Update Username</button>
+      <button ion-button (click)="onClickUpdateUsername()"  >Update Username</button>
+   
+      <button ion-button (click)="onClickCreateRoom()"  color="secondary" >Create Room</button>
     </ion-item>
     <ion-item>
-      <button ion-button (click)="onClickCreateRoom()" block color="secondary" >Create Room</button>
-    </ion-item>
-
-    <ion-item>
-      <button ion-button (click)="onClickJoinRoom()" block color="danger">Join Room</button>
-    </ion-item>
-
-    <ion-item>
-      <button ion-button (click)="onClickLogout()" block color="dark">Logout</button>
+      <button ion-button (click)="onClickJoinRoom()"  color="danger">Join Room</button>
+  
+      <button ion-button (click)="onClickLogout()"  color="dark">Logout</button>
     </ion-item>
     
   </ion-list>
   
   
   <ion-list>
+    <ion-title>Room and User List</ion-title>
     <ion-item *ngFor = " let id of roomIds ">
 
       {{ rooms[id].name }}
@@ -40,4 +37,21 @@
       
     </ion-item>
   </ion-list>
+
+  <ion-list inset>
+
+    <ion-item>
+      <ion-label floating>Message</ion-label>
+      <ion-input type="text" [(ngModel)]="inputMessage"></ion-input>
+    </ion-item>
+    
+    
+    <ion-list class="chatbox">
+      <ion-item *ngFor="let msg of listMessage[0].messages " ><b>{{msg.name}}</b>:{{ msg.message }}</ion-item>
+    </ion-list>
+    <ion-item>
+      <button ion-button (click)="onSendMessage(inputMessage)" color="primary" block >Send</button>
+    </ion-item>
+  </ion-list>
+
 </ion-content>

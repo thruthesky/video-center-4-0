@@ -14,12 +14,7 @@
       <ion-label floating>Username</ion-label>
       <ion-input type="text" [(ngModel)]="username"></ion-input>
     </ion-item>
-    
-    <ion-item *ngIf="error">
-      <div padding>
-        {{ error }}
-      </div>
-    </ion-item>
+ 
     <ion-item>
       <button ion-button (click)="onClickSignin()" color="primary" block >Sign In</button>
     </ion-item>
