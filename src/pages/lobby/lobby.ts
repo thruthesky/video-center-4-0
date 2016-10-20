@@ -27,7 +27,7 @@ export interface MESSAGELIST {
 export class LobbyPage {
 //    rooms: Array<{ room_id: string; users: x.USER}>;
   rooms: ROOMS = <ROOMS> {};
-  username: string;
+  title: string;
   inputMessage: string;
   listMessage: MESSAGELIST = <MESSAGELIST> {}; 
   constructor(
@@ -40,8 +40,9 @@ export class LobbyPage {
       this.listMessage[0] = { messages: [] };
     }
     vc.joinRoom( x.LobbyRoomName, re => { 
-      vc.username.then( x => this.username = x );
+      vc.getUsername().then( x => this.title = x );
       console.log('LobbyPage::constructor() joinRoom callback:', re);
+      
       vc.userList( '', re => {
         console.log('LobbyPage::constructor() vc.userList callback(): ', re);
         this.showRoomList( re );
@@ -49,40 +50,18 @@ export class LobbyPage {
     });
     
     this.listenEvents();
+    
+
+    //setTimeout( () => { this.createRoom('my room')}, 800);
   }
   onClickUpdateUsername() {
     this.getUsername( username => this.updateUsername( username ) );
   }
   onClickCreateRoom() {
-    let prompt = this.alertCtrl.create({
-      title: 'Create Room',
-      message: "Enter a roomname to create a new room",
-      inputs: [
-        {
-          name: 'roomname',
-          placeholder: 'Create Room'
-        },
-      ],
-      buttons: [        
-        {
-          text: 'Cancel',
-          handler: data => {
-            console.log('Cancel clicked');
-          }
-        },
-        {
-          text: 'Create',
-          handler: data => {
-            console.log('Create Room clicked',data);
-            this.onCreateRoom( data.roomname );
-          }
-        }        
-      ]
-    });
-    prompt.present();
+    this.getRoomname( x => this.createRoom( x ) );
   }
-  onClickJoinRoom() {
-      this.navCtrl.push( RoomPage );   
+  onClickJoinRoom( roomname ) {
+    this.joinRoom( roomname );
   }
 
   onClickLogout() {
@@ -95,7 +74,7 @@ export class LobbyPage {
     console.log(username);
     if ( username ) {
       this.vc.updateUsername( username, re => {
-        this.username = re.name;
+        this.title = re.name;
       } );
     }
     else {     
@@ -175,7 +154,7 @@ export class LobbyPage {
       console.log("LobbyPage::listenEvents() => One user updated his name: ", re );   
       for( let socket_id in re ) {
         let user: x.USER = re[socket_id];
-        let room_id = <string> this.vc.md5( user.room );   
+        let room_id = this.vc.md5( user.room );   
         if ( this.rooms[ room_id ] === void 0 ) this.rooms[ room_id ] = { name: user.room, users: [] };   
         let users = this.rooms[ room_id ].users;        
         for(let i in users) { 
@@ -189,19 +168,37 @@ export class LobbyPage {
     
     this.events.subscribe( 'join-room', re => {
       console.log("LobbyPage::listenEvents() => someone joins the room: ", re );
-      for( let socket_id in re ) {
-        let user: x.USER = re[socket_id];
-        let room_id = <string> this.vc.md5( user.room );   
-        if ( this.rooms[ room_id ] === void 0 ) this.rooms[ room_id ] = { name: user.room, users: [] };   
-        let users = this.rooms[ room_id ].users;       
-        for(let i in users) { 
-          if( users[i].socket === user.socket) {
-            this.rooms[ room_id ].users.splice(i, 1);
-            break;
-          }        
+      let user: x.USER = re[0];
+
+// remove
+
+      console.log("rooms:", this.rooms);
+      for ( let room_id in this.rooms ) {
+        console.log("room_id:" + room_id);
+
+        let users = this.rooms[ room_id ].users;
+        console.log("users:", users);
+        if ( users.length ) { /// @bug : somehow, empty roomname and empty users happend.
+          for( let i in users ) {
+            if ( users[i].socket == user.socket ) {
+//              delete users[i]; /// error. you cannot delete element array by index.
+                console.log( 'delete: ', users[i]);
+                users.splice( i, 1 );
+            }
+          }
         }
-        this.rooms[ room_id ].users.push( user );       
-      }     
+      }
+
+      // add user
+      console.log("user: ", user);
+      let room_id = this.vc.md5( user.room );
+      if ( this.rooms[ room_id ] === void 0 ) {
+        console.log("create a room for: " + user.room);
+        this.rooms[ room_id ] = { name: user.room, users: [] };
+      }
+      this.rooms[ room_id ].users.push( user );
+
+
     });
     this.events.subscribe( 'log-out', re => {
       console.log("LobbyPage::listenEvents() => someone logout the room: ", re );
@@ -256,5 +253,51 @@ export class LobbyPage {
     });
     prompt.present();
   }
+
+  /**
+   * Create a chat room
+   */
+  getRoomname( callback ) {
+    let prompt = this.alertCtrl.create({
+      title: 'Create Room',
+      message: "Enter a roomname to create a new room",
+      inputs: [
+        {
+          name: 'roomname',
+          placeholder: 'Create Room'
+        },
+      ],
+      buttons: [        
+        {
+          text: 'Cancel',
+          handler: data => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Create',
+          handler: data => {
+            console.log('Create Room clicked',data);
+            callback ( data.roomname );
+          }
+        }        
+      ]
+    });
+    prompt.present();
+  }
   
+
+  joinRoom( roomname ) {
+    this.vc.joinRoom( roomname, re => {
+      console.log( 'joinRoom(): ', re);
+      this.navCtrl.setRoot( RoomPage );   
+    } );
+  }
+
+  createRoom( roomname ) {
+    this.vc.createRoom( roomname, (re) => {
+      this.joinRoom( roomname );
+    });
+  }
+
 }

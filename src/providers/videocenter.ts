@@ -54,6 +54,7 @@ export class Videocenter {
       this.events.publish( 'update-username', re );
     });
     socket.on('join-room', re => {
+      console.log("socket.on('join-room') : ", re);
       this.events.publish( 'join-room', re );
     });
     socket.on('chatMessage', re => {
@@ -80,6 +81,9 @@ export class Videocenter {
    */
   get username() {
     return this.storage.get('username');
+  }
+  getUsername() {
+    return this.username;
   }
   /**
    * 
@@ -150,9 +154,9 @@ export class Videocenter {
     */
     
     
-    md5( str: string ) {
+    md5( str: string ) : string {
       let md = new Md5();
       md.appendStr( str );
-      return md.end();
+      return <string> md.end();
     }
 }
