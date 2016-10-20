@@ -114,6 +114,9 @@ export class Videocenter {
       callback( user );
     } );
   }
+  createRoom( roomname: string, callback) {
+    this.emit( 'create-room', roomname, callback );
+  }
 
   /**
    * Joins into a room and remember its name.
