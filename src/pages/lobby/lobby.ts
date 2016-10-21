@@ -99,7 +99,8 @@ export class LobbyPage {
         {
           text: 'Create',
           handler: data => {
-            console.log('Create Room clicked');
+            console.log('Create Room clicked',data);
+            this.onCreateRoom( data.roomname );
           }
         }        
       ]
@@ -116,7 +117,7 @@ export class LobbyPage {
       this.navCtrl.setRoot( EntrancePage );
     });
     
-  }
+  }  
   onUpdateUsername( username: string ) {
     console.log(username);
     if ( username ) {
@@ -128,6 +129,24 @@ export class LobbyPage {
       let alert = this.alertCtrl.create({
       title: 'Form Error!',
         subTitle: 'Your username input is empty!',
+        buttons: ['OK']
+      });
+      alert.present();
+    }
+  }
+  onCreateRoom( roomname: string ) {
+    console.log(roomname);
+    if ( roomname ) {
+      this.vc.createRoom( roomname, re => {
+        console.log('User creates a room:', re);
+        this.vc.setConfig('roomname', re);
+        this.navCtrl.setRoot( RoomPage );
+      } );
+    }
+    else {     
+      let alert = this.alertCtrl.create({
+      title: 'Form Error!',
+        subTitle: 'Your Roomname input is empty!',
         buttons: ['OK']
       });
       alert.present();
