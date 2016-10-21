@@ -1,7 +1,7 @@
 <ion-header>
   <ion-navbar>
     <ion-title>
-      Lobby - {{ username }}
+      Lobby  {{ username }}
     </ion-title>
   </ion-navbar>
 </ion-header>
@@ -31,7 +31,8 @@
       
       <div class="users">
         <div class="user" *ngFor = " let user of rooms[id].users " socket=" user.socket">
-          {{ user.name }}
+          {{ user.name }}   
+          <!--socket: {{user.socket}}-->
         </div>
       </div>
       

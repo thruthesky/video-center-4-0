@@ -53,8 +53,17 @@ export class Videocenter {
     socket.on('update-username', re => {
       this.events.publish( 'update-username', re );
     });
+    socket.on('join-room', re => {
+      this.events.publish( 'join-room', re );
+    });
     socket.on('chatMessage', re => {
       this.events.publish( 'chatMessage', re );
+    });
+    socket.on('log-out', re => {
+      this.events.publish( 'log-out', re );
+    });
+    socket.on('disconnect', re => {
+      this.events.publish( 'disconnect', re );
     });
   }
   /**
@@ -116,20 +125,15 @@ export class Videocenter {
       callback( re );
     });
   }
-  
-  
-
+  logout( callback ) {
+    this.emit('log-out', callback );
+  }
   userList( roomname: string, callback : any ) : void {
     this.emit('user-list', roomname, callback);
   }    
-    
   sendMessage( inputMessage: string, callback : any ) : void {
     this.emit('chat-message', inputMessage, callback);
-  } 
-
-
-
-
+  }
     /**
      * @edited give proper signature. 2016-09-02 JaeHo Song.
      */

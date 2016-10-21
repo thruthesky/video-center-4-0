@@ -111,8 +111,11 @@ export class LobbyPage {
   }
 
   onClickLogout() {
-    this.vc.setConfig('username', '');
-    this.navCtrl.setRoot( EntrancePage );
+    this.vc.logout(()=> {
+      this.vc.setConfig('username', '');
+      this.navCtrl.setRoot( EntrancePage );
+    });
+    
   }
   onUpdateUsername( username: string ) {
     console.log(username);
@@ -149,14 +152,32 @@ export class LobbyPage {
       if ( this.rooms[ room_id ] === void 0 ) {
         this.rooms[ room_id ] = { name: user.room, users: [] };
       }
-      this.rooms[ room_id ].users.push( user );     
+      let usr = this.rooms[ room_id ].users; 
+      for(let i in usr) { 
+          if( usr[i].socket === user.socket) {
+            this.rooms[ room_id ].users.splice(i, 1);
+          }        
+        }  
+      this.rooms[ room_id ].users.push( user );    
     }
     console.log( 'LobbyPage::showRoomList()', this.rooms );
   }
+  removeUserList( re ) {
+    for( let socket_id in re ) {
+      let user: x.USER = re[socket_id];
+      let room_id = <string> this.vc.md5( user.room );   
+      if ( this.rooms[ room_id ] === void 0 ) this.rooms[ room_id ] = { name: user.room, users: [] };   
+      let users = this.rooms[ room_id ].users;       
+      for(let i in users) { 
+        if( users[i].socket === user.socket) {
+          this.rooms[ room_id ].users.splice(i, 1);
+        }        
+      }      
+    }  
+  }
   get roomIds () {
     return Object.keys( this.rooms );
-  } 
-    
+  }    
   listenEvents() {
     this.events.subscribe( 'update-username', re => {
       console.log("LobbyPage::listenEvents() => One user updated his name: ", re );   
@@ -173,18 +194,38 @@ export class LobbyPage {
         }       
       }
     });
+    
+    this.events.subscribe( 'join-room', re => {
+      console.log("LobbyPage::listenEvents() => someone joins the room: ", re );
+      for( let socket_id in re ) {
+        let user: x.USER = re[socket_id];
+        let room_id = <string> this.vc.md5( user.room );   
+        if ( this.rooms[ room_id ] === void 0 ) this.rooms[ room_id ] = { name: user.room, users: [] };   
+        let users = this.rooms[ room_id ].users;       
+        for(let i in users) { 
+          if( users[i].socket === user.socket) {
+            this.rooms[ room_id ].users.splice(i, 1);
+            break;
+          }        
+        }
+        this.rooms[ room_id ].users.push( user );       
+      }     
+    });
+    this.events.subscribe( 'log-out', re => {
+      console.log("LobbyPage::listenEvents() => someone logout the room: ", re );
+      this.removeUserList(re);    
+    });
+    this.events.subscribe( 'disconnect', re => {
+      console.log("LobbyPage::listenEvents() => someone disconnect the room: ", re );
+      this.removeUserList(re);     
+    });
+    
     this.events.subscribe( 'chatMessage', re => {
       console.log("LobbyPage::listenEvents() => One user receive message: ", re );   
       for(let i in re) {
-        let message = re[i];
-        console.log( message );        
-        this.listMessage[0].messages.push( message );   
-        
-      }
-      console.log(this.listMessage[0].messages);
-      for(let i of this.listMessage[0].messages){
-        console.log(i.message)
-      }
+        let message = re[i];       
+        this.listMessage[0].messages.push( message );        
+      }      
     });
 
   }
