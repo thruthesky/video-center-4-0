@@ -40,7 +40,7 @@ export class LobbyPage {
       this.listMessage[0] = { messages: [] };
     }
     vc.joinRoom( x.LobbyRoomName, re => { 
-      vc.getUsername().then( x => this.title = x );
+      vc.getUsername().then( username => this.title = username );
       console.log('LobbyPage::constructor() joinRoom callback:', re);
       
       vc.userList( '', re => {
@@ -67,8 +67,7 @@ export class LobbyPage {
   onClickLogout() {
     this.vc.logout(()=> {
       this.navCtrl.setRoot( EntrancePage );
-    });
-    
+    });    
   }
   updateUsername( username: string ) {
     console.log(username);
@@ -85,25 +84,7 @@ export class LobbyPage {
       });
       alert.present();
     }
-  }
-  onCreateRoom( roomname: string ) {
-    console.log(roomname);
-    if ( roomname ) {
-      this.vc.createRoom( roomname, re => {
-        console.log('User creates a room:', re);
-        this.vc.setConfig('roomname', re);
-        this.navCtrl.setRoot( RoomPage );
-      } );
-    }
-    else {     
-      let alert = this.alertCtrl.create({
-      title: 'Form Error!',
-        subTitle: 'Your Roomname input is empty!',
-        buttons: ['OK']
-      });
-      alert.present();
-    }
-  }
+  }  
   onSendMessage(message: string) {
     if(message != ""){
       this.vc.sendMessage(message, ()=> {

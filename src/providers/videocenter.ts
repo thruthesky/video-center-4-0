@@ -85,6 +85,9 @@ export class Videocenter {
   getUsername() {
     return this.username;
   }
+  getRoomname() {
+    return this.roomname;
+  }
   /**
    * 
    * 
@@ -119,7 +122,10 @@ export class Videocenter {
     } );
   }
   createRoom( roomname: string, callback) {
-    this.emit( 'create-room', roomname, callback );
+    this.emit( 'create-room', roomname, re => {
+      this.setConfig('roomname', roomname);
+      callback( re );
+    });
   }
 
   /**
@@ -131,6 +137,9 @@ export class Videocenter {
       this.setConfig('roomname', roomname);
       callback( re );
     });
+  }
+  leaveRoom( callback ) {
+    this.emit('leave-room', callback );
   }
   logout( callback ) {
     this.setConfig('username', '');
