@@ -140,13 +140,16 @@ export class LobbyPage {
     this.events.subscribe( 'update-username', re => {
       console.log("LobbyPage::listenEvents() => One user updated his name: ", re );   
       this.updateUserOnUserList(re);
-    });
-    
+    });    
     this.events.subscribe( 'join-room', re => {
       console.log("LobbyPage::listenEvents() => someone joins the room: ", re );        
       this.removeUserList(re);// Remove User
-      this.addUserList(re);// Add User
-      
+      this.addUserList(re);// Add User      
+    });
+    this.events.subscribe( 'leave-room', room => {
+      console.log("LobbyPage::listenEvents() => someone leaves the room: ", room );  
+      let room_id = this.vc.md5( room[0] );    
+      delete this.rooms[ room_id ];      
     });
     this.events.subscribe( 'log-out', re => {
       console.log("LobbyPage::listenEvents() => someone logout the room: ", re );

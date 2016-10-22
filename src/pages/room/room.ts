@@ -21,8 +21,7 @@ export class RoomPage {
       if ( this.listMessage[0] === void 0 ) {
         this.listMessage[0] = { messages: [] };
       }
-      vc.getRoomname().then( roomname => this.title = roomname );
-      this.listenEvents();
+      vc.getRoomname().then( roomname => this.title = roomname );   
   }
   onClickLobby() {
     this.vc.leaveRoom(()=> {

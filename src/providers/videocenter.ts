@@ -61,6 +61,10 @@ export class Videocenter {
       console.log("socket.on('join-room') : ", re);
       this.events.publish( 'join-room', re );
     });
+    socket.on('leave-room', re => {
+      console.log("socket.on('leave-room') : ", re);
+      this.events.publish( 'leave-room', re );
+    });
     socket.on('chatMessage', re => {
       this.events.publish( 'chatMessage', re );
     });

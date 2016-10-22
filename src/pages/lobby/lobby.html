@@ -17,19 +17,17 @@
       <button ion-button (click)="onClickLogout()"  color="dark">Logout</button>
     </ion-item>
     
-  </ion-list>
-  
+  </ion-list>  
   
   <ion-list>
     <ion-title>Room and User List</ion-title>
     <ion-item *ngFor = " let id of roomIds ">
 
-      {{ rooms[id].name }}
+      {{ rooms[id].name }} 
       
       <div class="users">
         <div class="user" *ngFor = " let user of rooms[id].users " socket=" user.socket">
-          {{ user.name }}   
-          <!--socket: {{user.socket}}-->
+          {{ user.name }}
         </div>
       </div>
       
