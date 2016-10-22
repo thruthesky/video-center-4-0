@@ -76,6 +76,21 @@ export class LobbyPage {
       });
       alert.present();
     }
+  }
+  onJoinRoom( roomname ) {
+    if( roomname != x.LobbyRoomName ) {    
+      this.vc.setConfig('roomname', roomname);
+      this.joinRoom( roomname );
+    }
+    else {
+      let alert = this.alertCtrl.create({
+      title: 'Error!',
+        subTitle: 'You cant join the Lobby!',
+        buttons: ['OK']
+      });
+      alert.present();
+    }
+    
   }  
   onSendMessage(message: string) {
     if(message != ""){
@@ -232,7 +247,7 @@ export class LobbyPage {
   }
   
 
-  joinRoom( roomname ) {
+  joinRoom( roomname ) {  
     this.vc.joinRoom( roomname, re => {
       console.log( 'joinRoom(): ', re);
       this.navCtrl.setRoot( RoomPage );   
