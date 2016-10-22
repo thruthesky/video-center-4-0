@@ -11,7 +11,11 @@ export interface USER {
     socket: string
     type: string;
 }
-
+export interface MESSAGE {
+    message: string;
+    name: string;
+    room: string;
+}
 
 
 import { Storage } from '@ionic/storage';

@@ -11,13 +11,9 @@ export interface ROOMS {
     users: Array< x.USER >;
   }
 }
-export interface MESSAGE {
-    message: string;
-    name: string;
-    room: string;
-}
+
 export interface MESSAGELIST {
-    messages: Array< MESSAGE >
+    messages: Array< x.MESSAGE >
 }
 
 @Component({
@@ -47,12 +43,8 @@ export class LobbyPage {
         console.log('LobbyPage::constructor() vc.userList callback(): ', re);
         this.showRoomList( re );
       })
-    });
-    
-    this.listenEvents();
-    
-
-    //setTimeout( () => { this.createRoom('my room')}, 800);
+    });    
+    this.listenEvents();  
   }
   onClickUpdateUsername() {
     this.getUsername( username => this.updateUsername( username ) );
@@ -98,9 +90,7 @@ export class LobbyPage {
     console.log( 'LobbyPage::showRoomList() users: ', users );
     for ( let socket_id in users ) {
       let user: x.USER = users[socket_id];
-      console.log(' room.name: ' + user.room );
-      let room_id = <string> this.vc.md5( user.room );
-      console.log( ' room_id : ' + room_id );
+      let room_id = <string> this.vc.md5( user.room );   
       if ( this.rooms[ room_id ] === void 0 ) {
         this.rooms[ room_id ] = { name: user.room, users: [] };
       }
@@ -112,19 +102,37 @@ export class LobbyPage {
         }  
       this.rooms[ room_id ].users.push( user );    
     }
-    console.log( 'LobbyPage::showRoomList()', this.rooms );
   }
-  removeUserList( re ) {
-    for( let socket_id in re ) {
-      let user: x.USER = re[socket_id];
-      let room_id = <string> this.vc.md5( user.room );   
-      if ( this.rooms[ room_id ] === void 0 ) this.rooms[ room_id ] = { name: user.room, users: [] };   
-      let users = this.rooms[ room_id ].users;       
-      for(let i in users) { 
-        if( users[i].socket === user.socket) {
-          this.rooms[ room_id ].users.splice(i, 1);
-        }        
-      }      
+  addUserList( re ) {  
+  let user: x.USER = re[0];       
+      let room_id = this.vc.md5( user.room );
+      if ( this.rooms[ room_id ] === void 0 ) this.rooms[ room_id ] = { name: user.room, users: [] };      
+      this.rooms[ room_id ].users.push( user );
+  }
+  updateUserOnUserList( re ) {  
+    let user: x.USER = re[0];   
+    let room_id = this.vc.md5( user.room );   
+    if ( this.rooms[ room_id ] === void 0 ) this.rooms[ room_id ] = { name: user.room, users: [] };   
+    let users = this.rooms[ room_id ].users;        
+    for(let i in users) { 
+      if( users[i].socket === user.socket) {
+        this.rooms[ room_id ].users[i] = user;
+        break;
+      }          
+    }    
+  }
+  
+  removeUserList( re ) {  
+    let user: x.USER = re[0];
+    for ( let room_id in this.rooms ) {
+      let users = this.rooms[ room_id ].users;      
+      if ( users.length ) {
+        for( let i in users ) {
+          if ( users[i].socket == user.socket ) {
+              users.splice( i, 1 );
+          }
+        }
+      }
     }  
   }
   get roomIds () {
@@ -133,53 +141,14 @@ export class LobbyPage {
   listenEvents() {
     this.events.subscribe( 'update-username', re => {
       console.log("LobbyPage::listenEvents() => One user updated his name: ", re );   
-      for( let socket_id in re ) {
-        let user: x.USER = re[socket_id];
-        let room_id = this.vc.md5( user.room );   
-        if ( this.rooms[ room_id ] === void 0 ) this.rooms[ room_id ] = { name: user.room, users: [] };   
-        let users = this.rooms[ room_id ].users;        
-        for(let i in users) { 
-          if( users[i].socket === user.socket) {
-            this.rooms[ room_id ].users[i] = user;
-            break;
-          }          
-        }       
-      }
+      this.updateUserOnUserList(re);
     });
     
     this.events.subscribe( 'join-room', re => {
-      console.log("LobbyPage::listenEvents() => someone joins the room: ", re );
-      let user: x.USER = re[0];
-
-// remove
-
-      console.log("rooms:", this.rooms);
-      for ( let room_id in this.rooms ) {
-        console.log("room_id:" + room_id);
-
-        let users = this.rooms[ room_id ].users;
-        console.log("users:", users);
-        if ( users.length ) { /// @bug : somehow, empty roomname and empty users happend.
-          for( let i in users ) {
-            if ( users[i].socket == user.socket ) {
-//              delete users[i]; /// error. you cannot delete element array by index.
-                console.log( 'delete: ', users[i]);
-                users.splice( i, 1 );
-            }
-          }
-        }
-      }
-
-      // add user
-      console.log("user: ", user);
-      let room_id = this.vc.md5( user.room );
-      if ( this.rooms[ room_id ] === void 0 ) {
-        console.log("create a room for: " + user.room);
-        this.rooms[ room_id ] = { name: user.room, users: [] };
-      }
-      this.rooms[ room_id ].users.push( user );
-
-
+      console.log("LobbyPage::listenEvents() => someone joins the room: ", re );        
+      this.removeUserList(re);// Remove User
+      this.addUserList(re);// Add User
+      
     });
     this.events.subscribe( 'log-out', re => {
       console.log("LobbyPage::listenEvents() => someone logout the room: ", re );
