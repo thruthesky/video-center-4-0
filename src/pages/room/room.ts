@@ -22,6 +22,7 @@ export class RoomPage {
         this.listMessage[0] = { messages: [] };
       }
       vc.getRoomname().then( roomname => this.title = roomname );
+      this.listenEvents();
   }
   onClickLobby() {
     this.vc.leaveRoom(()=> {
@@ -35,5 +36,12 @@ export class RoomPage {
       });
          
     }
+  }
+  listenEvents() {    
+    this.events.subscribe( 'chatMessage', re => {
+      console.log("RoomPage::listenEvents() => One user receive message: ", re ); 
+      let message = re[0];       
+      this.listMessage[0].messages.push( message );         
+    });
   }
 }

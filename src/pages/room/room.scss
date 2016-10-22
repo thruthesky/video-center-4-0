@@ -1,3 +1,9 @@
 page-room {
-
+    .chatbox {
+        background-color:#e5e9f1;
+        color:white;
+        height: 140px;
+        overflow: hidden;
+        overflow-y: scroll;        
+    }
 }

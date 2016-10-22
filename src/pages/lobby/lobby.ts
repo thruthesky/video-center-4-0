@@ -91,9 +91,7 @@ export class LobbyPage {
     for ( let socket_id in users ) {
       let user: x.USER = users[socket_id];
       let room_id = <string> this.vc.md5( user.room );   
-      if ( this.rooms[ room_id ] === void 0 ) {
-        this.rooms[ room_id ] = { name: user.room, users: [] };
-      }
+      if ( this.rooms[ room_id ] === void 0 ) this.rooms[ room_id ] = { name: user.room, users: [] };      
       let usr = this.rooms[ room_id ].users; 
       for(let i in usr) { 
           if( usr[i].socket === user.socket) {
@@ -104,10 +102,10 @@ export class LobbyPage {
     }
   }
   addUserList( re ) {  
-  let user: x.USER = re[0];       
-      let room_id = this.vc.md5( user.room );
-      if ( this.rooms[ room_id ] === void 0 ) this.rooms[ room_id ] = { name: user.room, users: [] };      
-      this.rooms[ room_id ].users.push( user );
+    let user: x.USER = re[0];       
+    let room_id = this.vc.md5( user.room );
+    if ( this.rooms[ room_id ] === void 0 ) this.rooms[ room_id ] = { name: user.room, users: [] };      
+    this.rooms[ room_id ].users.push( user );
   }
   updateUserOnUserList( re ) {  
     let user: x.USER = re[0];   
@@ -160,17 +158,11 @@ export class LobbyPage {
     });
     
     this.events.subscribe( 'chatMessage', re => {
-      console.log("LobbyPage::listenEvents() => One user receive message: ", re );   
-      for(let i in re) {
-        let message = re[i];       
-        this.listMessage[0].messages.push( message );        
-      }      
+      console.log("LobbyPage::listenEvents() => One user receive message: ", re ); 
+      let message = re[0];       
+      this.listMessage[0].messages.push( message );         
     });
-
   }
-
-
-
   /**
    * Gets username from user keyboard input.
    */
