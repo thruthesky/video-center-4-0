@@ -37,11 +37,20 @@ export class RoomPage {
          
     }
   }
-  listenEvents() {    
+  listenEvents() {
+    this.events.subscribe( 'join-room', re => {
+      console.log("RoomPage::listenEvents() => someone joins the room: ", re );          
+      let message = { name: re[0].name, message: ' joins into ' + re[0].room };//Set Message
+      this.addMessage( message );    
+    });    
     this.events.subscribe( 'chatMessage', re => {
       console.log("RoomPage::listenEvents() => One user receive message: ", re ); 
-      let message = re[0];       
-      this.listMessage[0].messages.push( message );         
+      let message = re[0];
+      this.addMessage( message );         
     });
+    
+  }
+  addMessage( message ) {     
+    this.listMessage[0].messages.push( message ); 
   }
 }

@@ -18,10 +18,9 @@ export interface MESSAGELIST {
 
 @Component({
   selector: 'page-lobby',
-  templateUrl: 'lobby.html'
+  templateUrl: 'lobby.html',
 })
 export class LobbyPage {
-//    rooms: Array<{ room_id: string; users: x.USER}>;
   rooms: ROOMS = <ROOMS> {};
   title: string;
   inputMessage: string;
@@ -159,7 +158,9 @@ export class LobbyPage {
     this.events.subscribe( 'join-room', re => {
       console.log("LobbyPage::listenEvents() => someone joins the room: ", re );        
       this.removeUserList(re);// Remove User
-      this.addUserList(re);// Add User      
+      this.addUserList(re);// Add User        
+      let message = { name: re[0].name, message: ' joins into ' + re[0].room };//Set Message
+      this.addMessage( message );    
     });
     this.events.subscribe( 'leave-room', room => {
       console.log("LobbyPage::listenEvents() => someone leaves the room: ", room );  
@@ -176,9 +177,9 @@ export class LobbyPage {
     });
     
     this.events.subscribe( 'chatMessage', re => {
-      console.log("LobbyPage::listenEvents() => One user receive message: ", re ); 
-      let message = re[0];       
-      this.listMessage[0].messages.push( message );         
+      console.log("LobbyPage::listenEvents() => One user receive message: ", re );
+      let message = re[0];
+      this.addMessage( message );             
     });
   }
   /**
@@ -246,7 +247,9 @@ export class LobbyPage {
     prompt.present();
   }
   
-
+  addMessage( message ) {     
+    this.listMessage[0].messages.push( message ); 
+  }
   joinRoom( roomname ) {  
     this.vc.joinRoom( roomname, re => {
       console.log( 'joinRoom(): ', re);
