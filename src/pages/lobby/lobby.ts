@@ -158,9 +158,9 @@ export class LobbyPage {
     this.events.subscribe( 'join-room', re => {
       console.log("LobbyPage::listenEvents() => someone joins the room: ", re );        
       this.removeUserList(re);// Remove User
-      this.addUserList(re);// Add User        
-      let message = { name: re[0].name, message: ' joins into ' + re[0].room };//Set Message
-      this.addMessage( message );    
+      this.addUserList(re);// Add User
+      this.joinMessage( re );       
+        
     });
     this.events.subscribe( 'leave-room', room => {
       console.log("LobbyPage::listenEvents() => someone leaves the room: ", room );  
@@ -173,7 +173,8 @@ export class LobbyPage {
     });
     this.events.subscribe( 'disconnect', re => {
       console.log("LobbyPage::listenEvents() => someone disconnect the room: ", re );
-      this.removeUserList(re);     
+      this.removeUserList(re);
+      this.disconnectMessage( re );     
     });
     
     this.events.subscribe( 'chatMessage', re => {
@@ -246,7 +247,17 @@ export class LobbyPage {
     });
     prompt.present();
   }
-  
+  joinMessage( re ){
+    let message = { name: re[0].name, message: ' joins into ' + re[0].room };
+    this.addMessage( message ); 
+  }
+  disconnectMessage( re ){
+    if( re[0].room ){
+      let message = { name: re[0].name, message: ' disconnect into ' + re[0].room };
+      this.addMessage( message );
+    } 
+  }
+   
   addMessage( message ) {     
     this.listMessage[0].messages.push( message ); 
   }
