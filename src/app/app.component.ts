@@ -3,7 +3,8 @@ import { Platform } from 'ionic-angular';
 import { StatusBar } from 'ionic-native';
 import { EntrancePage } from '../pages/entrance/entrance';
 import { LobbyPage } from '../pages/lobby/lobby';
-import { Videocenter } from '../providers/videocenter';
+import { RoomPage } from '../pages/room/room';
+import * as x from '../providers/videocenter';
 
 
 @Component({
@@ -12,12 +13,21 @@ import { Videocenter } from '../providers/videocenter';
 export class MyApp {
   rootPage;
 
-  constructor(platform: Platform, private vc: Videocenter ) {
+  constructor(platform: Platform, private vc: x.Videocenter ) {
     vc.connnect();
     vc.config('username', username => {
       if ( username ) {
         this.vc.updateUsername( username, re => {
-          this.rootPage = LobbyPage;
+          vc.config('roomname', roomname => {
+            if( roomname && roomname != x.LobbyRoomName ){
+              this.vc.joinRoom( roomname, re => {               
+                this.rootPage =  RoomPage;   
+              } );
+            }
+            else {             
+                this.rootPage = LobbyPage;              
+            }
+          });
         });
       }
       else this.rootPage = EntrancePage;
