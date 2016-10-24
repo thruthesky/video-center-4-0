@@ -104,6 +104,7 @@ export class LobbyPage {
     console.log( 'LobbyPage::showRoomList() users: ', users );
     for ( let socket_id in users ) {
       let user: x.USER = users[socket_id];
+      if(!user.room) continue;
       let room_id = <string> this.vc.md5( user.room );   
       if ( this.rooms[ room_id ] === void 0 ) this.rooms[ room_id ] = { name: user.room, users: [] };      
       let usr = this.rooms[ room_id ].users; 
