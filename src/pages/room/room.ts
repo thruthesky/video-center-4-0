@@ -2,7 +2,6 @@ import { Component, ViewChild } from '@angular/core';
 import { NavController, Events } from 'ionic-angular';
 import * as x from '../../providers/videocenter';
 import { LobbyPage } from '../lobby/lobby';
-import { SignaturePad } from 'angular2-signaturepad/signature-pad';
 export interface MESSAGELIST {
     messages: Array< x.MESSAGE >
 }
@@ -14,15 +13,7 @@ export class RoomPage {
   title: string;
   inputMessage: string;
   listMessage: MESSAGELIST = <MESSAGELIST> {};
-  //  Draw
-  @ViewChild(SignaturePad) signaturePad: SignaturePad;
  
-  private signaturePadOptions: Object = { // passed through to szimek/signature_pad constructor
-    'minWidth': 5,
-    'canvasWidth': 500,
-    'canvasHeight': 300,
-
-  };
   constructor(
     public navCtrl: NavController, 
     private vc: x.Videocenter,
@@ -63,49 +54,5 @@ export class RoomPage {
   addMessage( message ) {     
     this.listMessage[0].messages.push( message ); 
   }
-  // Draw
-  ngAfterViewInit() {
-    // this.signaturePad is now available
-    this.signaturePad.set('minWidth', 2); // set szimek/signature_pad options at runtime
-    this.signaturePad.clear(); // invoke functions from szimek/signature_pad API
-  }
  
-  drawComplete() {
-    // will be notified of szimek/signature_pad's onEnd event
-    // console.log(this.signaturePad.toDataURL());
-  }
-  onClickClearCanvas() {
-    this.signaturePad.clear(); 
-  }
-  onClickBlackColor() {
-    this.signaturePad.set('penColor','black');    
-  }
-  onClickDraw() {
-    this.signaturePad.draw();
-  }
-  onClickErase() {
-    this.signaturePad.erase();
-  }
-  onClickRedColor() {
-    this.signaturePad.set('penColor','red');
-  }
-  onClickGreenColor() {
-    this.signaturePad.set('penColor','green');
-  }
-  onClickBlueColor() {
-    this.signaturePad.set('penColor','blue');
-  }
-  onClickSmall() {
-    this.signaturePad.set('minWidth', 2);
-  }
-  onClickMedium() {
-    this.signaturePad.set('minWidth', 5);
-  }
-  onClickLarge() {
-    this.signaturePad.set('minWidth', 10);
-  }
-  drawStart() {
-    // will be notified of szimek/signature_pad's onBegin event
-    console.log('begin drawing');
-  }
 }
