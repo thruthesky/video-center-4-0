@@ -7,7 +7,9 @@ import { RoomPage } from '../pages/room/room';
 import { Videocenter } from '../providers/videocenter';
 import { Storage } from '@ionic/storage';
 import {Angular2AutoScroll} from "angular2-auto-scroll/lib/angular2-auto-scroll.directive";
- 
+ //Draw
+ import { SignaturePadModule } from 'angular2-signaturepad';
+
 @NgModule({
   declarations: [
     MyApp,
@@ -17,7 +19,8 @@ import {Angular2AutoScroll} from "angular2-auto-scroll/lib/angular2-auto-scroll.
     Angular2AutoScroll
   ],
   imports: [
-    IonicModule.forRoot(MyApp)
+    IonicModule.forRoot(MyApp),
+    SignaturePadModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [

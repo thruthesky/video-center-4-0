@@ -21,7 +21,7 @@ export interface MESSAGE {
 import { Storage } from '@ionic/storage';
 @Injectable()
 export class Videocenter {
-    //socketUrl: string = "http://localhost:9001/";
+    // socketUrl: string = "http://localhost:9001/";
     socketUrl: string = "http://dev.withcenter.com:9001/";
     static socket:any = false;
     static connection;
