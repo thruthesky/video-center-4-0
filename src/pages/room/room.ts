@@ -54,6 +54,7 @@ export class RoomPage {
       let message = re[0];
       this.addMessage( message );         
     });
+      
     
   }
   addMessage( message ) {     
@@ -61,7 +62,7 @@ export class RoomPage {
   }
   //Canvas Clear
   onClickClear() {
-    this.events.publish( 'clear-canvas' );
+    this.events.publish( 'click-clear-canvas' );
   } 
  
 }

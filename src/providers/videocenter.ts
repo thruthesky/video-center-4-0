@@ -80,6 +80,9 @@ export class Videocenter {
     socket.on('chatMessage', re => {
       this.events.publish( 'chatMessage', re );
     });
+    socket.on('whiteboard', re => {
+      this.events.publish( 'whiteboard', re );
+    });
     socket.on('log-out', re => {
       this.events.publish( 'log-out', re );
     });
@@ -170,6 +173,10 @@ export class Videocenter {
   }    
   sendMessage( inputMessage: string, callback : any ) : void {
     this.emit('chat-message', inputMessage, callback);
+  }
+  // WhiteBoard
+  whiteboard( data, callback : any ) : void {
+    this.emit('whiteboard', data, callback);
   }
     /**
      * @edited give proper signature. 2016-09-02 JaeHo Song.

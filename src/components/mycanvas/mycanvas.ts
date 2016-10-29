@@ -1,6 +1,6 @@
 import { Directive, ElementRef, HostListener, Input, Renderer } from '@angular/core';
 import { Events } from 'ionic-angular';
-import * as vc from '../../providers/videocenter';
+import * as x from '../../providers/videocenter';
 
 @Directive({
   selector: '[mycanvas]' // Attribute selector
@@ -12,10 +12,11 @@ export class MycanvasDirective {
   @Input() drawMode: string;
   private canvas: any;
   private canvas_context: any;
-  private mouse : vc.Mouse = vc.mouse;
+  private mouse : x.Mouse = x.mouse;
   constructor(
      private el: ElementRef,
      private renderer: Renderer,
+     private vc: x.Videocenter,
      private events: Events) {
       this.canvas = el.nativeElement;
       this.canvas_context = this.canvas.getContext('2d');
@@ -114,8 +115,12 @@ export class MycanvasDirective {
     let data :any =  { line : [this.mouse.pos, this.mouse.pos_prev] };
     data.lineWidth = this.drawSize;
     data.color = this.drawColor;
-    data.room_name = 'testing';
+    data.room_name = this.vc.getRoomname;
     data.draw_mode = this.drawMode;
+    data.command = "draw";      
+    this.vc.whiteboard( data, ()=>{
+      console.log('success');
+    });
     this.draw_on_canvas( data );
     this.mouse.pos_prev.x = this.mouse.pos.x;
     this.mouse.pos_prev.y = this.mouse.pos.y;
@@ -170,10 +175,42 @@ export class MycanvasDirective {
     // Restore the transform
     ctx.restore();
   }
+  broadcastClearCanvas() {
+    let data :any = { room_name : this.vc.getRoomname };
+    data.command = "clear";
+    this.vc.whiteboard( data, ()=>{
+        console.log('clear whiteboard');
+    });
+  }
   // Event Listener
   listenEvents() {
-    this.events.subscribe( 'clear-canvas', () => {
-      this.clear_my_canvas();
+    this.events.subscribe( 'click-clear-canvas', () => {
+      this.broadcastClearCanvas();
+    });
+    this.events.subscribe( 'whiteboard', re => {
+      console.log("Whiteboard::listenEvents() =>  ", re );          
+      let data = re[0];
+      if ( data.command == 'draw' ) {
+          this.draw_on_canvas(data);
+      }
+      else if ( data.command == 'history' ) { 
+          this.draw_on_canvas(data);
+      }     
+      else if ( data.command == 'clear' ) {
+          this.clear_my_canvas();        
+      }
+      // else if ( data.command == 'show-whiteboard' ) {
+      //     console.log('socket_on_from_server() : command = ' + data.command );
+      //     // this.show();
+      // }
+      // else if ( data.command == 'hide-whiteboard' ) {
+      //     console.log('socket_on_from_server() : command = ' + data.command );
+      //     this.hide();
+      // }
+      // else if ( data.command == 'canvas-size' ) { 
+      //     console.log('socket_on_from_server() : command = ' + data.command );
+      //     this.change_canvas_size( data.size );
+      // }   
     });    
   }
 }
