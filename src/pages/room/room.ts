@@ -13,7 +13,12 @@ export class RoomPage {
   title: string;
   inputMessage: string;
   listMessage: MESSAGELIST = <MESSAGELIST> {};
- 
+  dmode;
+  dsize;
+  dcolor;
+  DrawMode;
+  DrawSize;
+  DrawColor;
   constructor(
     public navCtrl: NavController, 
     private vc: x.Videocenter,
@@ -54,5 +59,9 @@ export class RoomPage {
   addMessage( message ) {     
     this.listMessage[0].messages.push( message ); 
   }
+  //Canvas Clear
+  onClickClear() {
+    this.events.publish( 'clear-canvas' );
+  } 
  
 }

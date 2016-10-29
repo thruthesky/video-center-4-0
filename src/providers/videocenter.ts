@@ -16,13 +16,24 @@ export interface MESSAGE {
     name: string;
     room: string;
 }
-
+export interface Mouse {
+    click: boolean;
+    move: boolean;
+    pos: { x:number | string, y:number | string };
+    pos_prev: { x: number | string, y: number | string };
+}
+export let mouse: Mouse = {
+        click: false,
+        move: false,
+        pos: { x:0, y: 0},
+        pos_prev: { x: 0, y: 0 }
+}
 
 import { Storage } from '@ionic/storage';
 @Injectable()
 export class Videocenter {
-    // socketUrl: string = "http://localhost:9001/";
-    socketUrl: string = "http://dev.withcenter.com:9001/";
+    socketUrl: string = "http://localhost:9001/";
+    // socketUrl: string = "http://dev.withcenter.com:9001/";
     static socket:any = false;
     static connection;
   constructor(
