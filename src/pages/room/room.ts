@@ -27,7 +27,13 @@ export class RoomPage {
       if ( this.listMessage[0] === void 0 ) {
         this.listMessage[0] = { messages: [] };
       }
-      vc.getRoomname().then( roomname => this.title = roomname );
+      vc.getRoomname().then( roomname => {
+        this.title = roomname;
+        let data :any = { room_name : roomname };
+        data.command = "history";
+        this.vc.whiteboard( data,() => { console.log("get whiteboard history")} );
+      });
+     
       this.listenEvents();
   }
   onClickLobby() {

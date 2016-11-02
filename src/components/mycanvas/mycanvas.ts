@@ -22,7 +22,7 @@ export class MycanvasDirective {
       this.canvas_context = this.canvas.getContext('2d');
       this.drawSize = "2";
       this.drawColor = "#161515";
-      this.drawColor = "l";
+      this.drawMode = "l";
       this.listenEvents();
     }
   //Mouse Event
@@ -115,19 +115,22 @@ export class MycanvasDirective {
     let data :any =  { line : [this.mouse.pos, this.mouse.pos_prev] };
     data.lineWidth = this.drawSize;
     data.color = this.drawColor;
-    data.room_name = this.vc.getRoomname;
     data.draw_mode = this.drawMode;
-    data.command = "draw";      
-    this.vc.whiteboard( data, ()=>{
-      console.log('success');
+    data.command = "draw"; 
+    this.vc.getRoomname().then( roomname => {
+        data.room_name = roomname;
+        this.vc.whiteboard( data, ()=>{
+          console.log('success');
+        });
+        this.draw_on_canvas( data );
+        this.mouse.pos_prev.x = this.mouse.pos.x;
+        this.mouse.pos_prev.y = this.mouse.pos.y;
     });
-    this.draw_on_canvas( data );
-    this.mouse.pos_prev.x = this.mouse.pos.x;
-    this.mouse.pos_prev.y = this.mouse.pos.y;
   }
-  draw_on_canvas( data ) {        
+  draw_on_canvas( data ) {
     let line = data.line;
     if ( typeof data.lineJoin == 'undefined' ) data.lineJoin = 'round';
+    if ( typeof data.draw_mode == 'undefined' ) data.draw_mode = 'l';
     if ( typeof data.lineWidth == 'undefined' ) data.lineWidth = 3;
     if ( typeof data.color == 'undefined' ) data.color = 'black';
     let ox = line[0].x;
@@ -175,11 +178,13 @@ export class MycanvasDirective {
     // Restore the transform
     ctx.restore();
   }
-  broadcastClearCanvas() {
-    let data :any = { room_name : this.vc.getRoomname };
-    data.command = "clear";
-    this.vc.whiteboard( data, ()=>{
-        console.log('clear whiteboard');
+  broadcastClearCanvas() {    
+    this.vc.getRoomname().then( roomname => {
+        let data :any = { command : "clear" };
+        data.room_name = roomname;
+        this.vc.whiteboard( data, ()=>{
+          console.log('clear whiteboard');
+        });
     });
   }
   // Event Listener
